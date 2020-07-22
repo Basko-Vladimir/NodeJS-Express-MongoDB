@@ -33,9 +33,11 @@ const server = http.createServer( (req, res) => {
             break;
         case '/lessons':
             res.write('LESSONS');
+            res.end();
             break;
         default:
             res.write('PAGE NOT FOUND');
+            res.end();
     }
 
 });
