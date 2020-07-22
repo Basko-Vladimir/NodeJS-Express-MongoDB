@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [users, setUsers] = useState<Array<{id: number, name: string}>>([]);
+  const [users, setUsers] = useState<Array<{id?: number, name: string}>>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const getUsers = () => {
       axios.get('http://localhost:3001/users')
@@ -15,14 +16,15 @@ function App() {
   }, []);
 
   const createUser = () => {
-      axios.post('http://localhost:3001/users')
+      axios.post('http://localhost:3001/users', {name: inputRef.current &&  inputRef.current.value})
           .then( () => getUsers());
   };
 
   return (
     <div className="App">
+        <input type="text" ref={inputRef}/>
       <button onClick={createUser}>Create new user</button>
-      {users.map( u => <div key={u.id}>{u.name}</div>)}
+      {users.map( (u,i) => <div key={i}>{u.name}</div>)}
     </div>
   );
 }
