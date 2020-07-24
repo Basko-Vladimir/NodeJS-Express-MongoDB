@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [users, setUsers] = useState<Array<{id?: number, name: string}>>([]);
+  const [users, setUsers] = useState<Array<{_id: string, name: string}>>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const getUsers = () => {
@@ -17,14 +17,37 @@ function App() {
 
   const createUser = () => {
       axios.post('http://localhost:3001/users', {name: inputRef.current &&  inputRef.current.value})
-          .then( () => getUsers());
+          .then( () => {
+              if (inputRef.current) inputRef.current.value = '';
+              getUsers()
+          });
+  };
+
+  const deleteUser = (id: string) => {
+      axios.delete(`http://localhost:3001/users/${id}`)
+          .then(() => getUsers())
+  };
+
+  const updateUser = (id: string, name: string) => {
+      // const name = updateInputRef.current &&  updateInputRef.current.value;
+      axios.put('http://localhost:3001/users', {name, id})
+        .then(() => {
+            if (inputRef.current) inputRef.current.value = '';
+            getUsers()
+        });
   };
 
   return (
     <div className="App">
         <input type="text" ref={inputRef}/>
       <button onClick={createUser}>Create new user</button>
-      {users.map( (u,i) => <div key={i}>{u.name}</div>)}
+      {users.map( (u,i) => <div key={i}>
+                                                              <input defaultValue={u.name} autoFocus={true}
+                                                                  onBlur={(e) => updateUser(u._id, e.currentTarget.value)}/>
+                                                              <button onClick={() => deleteUser(u._id)}>X</button>
+                                                        </div>
+
+      )}
     </div>
   );
 }

@@ -3,6 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const users = require('./users-router');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/users', {useNewUrlParser: true});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+
+});
+
 
 const app = express();
 
